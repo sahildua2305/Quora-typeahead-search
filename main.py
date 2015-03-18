@@ -39,12 +39,12 @@ class TrieNode:
         if len(string)>0:
             key = string[0]
             string = string[1:]
+            results = []
             if self.next.has_key(key.upper()):
-                return self.next[key.upper()].search(string)
-            elif self.next.has_key(key.lower()):
-                return self.next[key.lower()].search(string)
-            else:
-                return []
+                 results += self.next[key.upper()].search(string)
+            if self.next.has_key(key.lower()):
+                results += self.next[key.lower()].search(string)
+            return results
         else:
             results = []
             if self.word_end==True:
@@ -142,7 +142,6 @@ for p in range(N):
                 results = root.search(word)
                 continue
             results = list(set(results)&set(root.search(word)))
-            #print root.search(word),
         results = [x for x in results if x not in deleted_ids]
         results = (custom_sort(results))[:num_results]
         print ' '.join(results)
@@ -151,4 +150,3 @@ for p in range(N):
             dic[item][3]=1.0
         for item in boosts:
             boosts[item]=1.0
-print dic.keys()[:100]

@@ -23,7 +23,7 @@ class TrieNode:
             self.next[key] = node
             node.add_item(string,id)
 
-    def dfs(self, so_far=None):
+    def dfs(self):
         if self.next.keys()==[]: # this means it's a leaf node and this a complete word has to be included
             return self.ids
 
@@ -32,27 +32,25 @@ class TrieNode:
             results += self.ids
 
         for key in self.next.keys():
-            results += self.next[key].dfs(so_far+key)
+            results += self.next[key].dfs()
         return results
 
-    def search(self, string, so_far=""):
+    def search(self, string):
         if len(string)>0:
             key = string[0]
             string = string[1:]
+            results = []
             if self.next.has_key(key.upper()):
-                so_far = so_far + key.upper()
-                return self.next[key.upper()].search(string, so_far)
-            elif self.next.has_key(key.lower()):
-                so_far = so_far + key.lower()
-                return self.next[key.lower()].search(string, so_far)
-            else:
-                return []
+                 results += self.next[key.upper()].search(string)
+            if self.next.has_key(key.lower()):
+                results += self.next[key.lower()].search(string)
+            return results
         else:
             results = []
             if self.word_end==True:
                 results += self.ids
             for key in self.next.keys():
-                results += self.next[key].dfs(so_far+key)
+                results += self.next[key].dfs()
             return results
 
 root = TrieNode()
@@ -77,7 +75,7 @@ def custom_sort(results):
     results = sorted(results, cmp = custom_sort_util)
     return results
 
-for i in range(N):
+for p in range(N):
     line = raw_input().strip('\r\n')
     if line.startswith("ADD"):
         time+=1 # increment the time counter to keep track of recent entries in case of tie based on score
@@ -141,7 +139,6 @@ for i in range(N):
                 results = root.search(word)
                 continue
             results = list(set(results)&set(root.search(word)))
-            #print root.search(word),
         results = [x for x in results if x not in deleted_ids]
         results = (custom_sort(results))[:num_results]
         print ' '.join(results)
